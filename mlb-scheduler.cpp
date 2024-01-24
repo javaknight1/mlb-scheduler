@@ -10,28 +10,29 @@
 #include <string>
 #include <string.h>
 #include <json/json.h>
+using namespace std;
 
-Json::Value loadSchedule(const std::string& filePath) {
+Json::Value load_schedule(const string& filePath) {
     Json::Value schedule;
 
-    std::ifstream file(filePath, std::ifstream::binary);
+    ifstream file(filePath, ifstream::binary);
     if (file.is_open()) {
         try {
             file >> schedule;
         } catch (const Json::Exception& e) {
-            std::cerr << "Error reading JSON file: " << e.what() << std::endl;
+            cerr << "Error reading JSON file: " << e.what() << endl;
         }
 
         file.close();
     } else {
-        std::cerr << "Error opening file: " << filePath << std::endl;
+        cerr << "Error opening file: " << filePath << endl;
     }
 
     return schedule;
 }
 
-std::unordered_map<std::string, std::vector<std::string>> convertJsonToMap(const Json::Value& jsonData) {
-    std::unordered_map<std::string, std::vector<std::string>> resultMap;
+unordered_map<string, vector<string>> convert_json_to_map(const Json::Value& jsonData) {
+    unordered_map<string, vector<string>> resultMap;
 
     if (jsonData.isObject()) {
         for (const auto& team : jsonData.getMemberNames()) {
@@ -48,17 +49,19 @@ std::unordered_map<std::string, std::vector<std::string>> convertJsonToMap(const
     return resultMap;
 }
 
-std::vector<std::string> getGames(const std::vector<std::string>& schedule) {
-    std::vector<std::string> games;
+vector<string> get_games(const vector<string>& schedule) {
+    vector<string> games;
 
     for (const auto& game : schedule) {
-        std::tm datetime_obj = {};
-        std::istringstream dateStream(game + "/24");
-        dateStream >> std::get_time(&datetime_obj, "%m/%d/%y");
-        std::mktime(&datetime_obj);
+        tm datetime_obj = {};
+        istringstream dateStream(game + "/24");
+        dateStream >> get_time(&datetime_obj, "%m/%d/%y");
+        mktime(&datetime_obj);
 
         if (datetime_obj.tm_wday == 5 || datetime_obj.tm_wday == 6 || datetime_obj.tm_wday == 0 || datetime_obj.tm_wday == 1) {
-            if (!(datetime_obj.tm_mon == 4 && datetime_obj.tm_mday < 15) && !(datetime_obj.tm_mon == 5 && datetime_obj.tm_mday < 15)) {
+            if (!(datetime_obj.tm_mon == 4 && datetime_obj.tm_mday < 15) && 
+                !(datetime_obj.tm_mon == 5 && datetime_obj.tm_mday < 15) && 
+                !(datetime_obj.tm_mon == 3 && datetime_obj.tm_mday > 21)) {
                 games.push_back(game);
             }
         }
@@ -67,23 +70,23 @@ std::vector<std::string> getGames(const std::vector<std::string>& schedule) {
     return games;
 }
 
-std::string create_datestr_for_matching(const std::string& gameday, int delta) {
+string create_datestr_for_matching(const string& gameday, int delta) {
     // Assuming gameday is in the format "MM/DD/YY"
-    std::tm tm_date = {};
-    std::istringstream dateStream(gameday + "/24");
-    dateStream >> std::get_time(&tm_date, "%m/%d/%y");
+    tm tm_date = {};
+    istringstream dateStream(gameday + "/24");
+    dateStream >> get_time(&tm_date, "%m/%d/%y");
 
     tm_date.tm_mday += delta;
-    std::mktime(&tm_date);
+    mktime(&tm_date);
 
-    return std::to_string(tm_date.tm_mon+1) + "/" + std::to_string(tm_date.tm_mday);
+    return to_string(tm_date.tm_mon+1) + "/" + to_string(tm_date.tm_mday);
 }
 
-std::vector<std::string> generate_close_dates(const std::string& game, bool include_itself = false, int day_range = 3) {
-    std::vector<std::string> result;
+vector<string> generate_close_dates(const string& game, bool include_itself = false, int day_range = 3) {
+    vector<string> result;
 
     for (int i = 1; i <= day_range; ++i) {
-        result.push_back(create_datestr_for_matching(game, i));
+        result.insert(result.begin(), create_datestr_for_matching(game, i));
         result.push_back(create_datestr_for_matching(game, -i));
     }
 
@@ -94,8 +97,8 @@ std::vector<std::string> generate_close_dates(const std::string& game, bool incl
     return result;
 }
 
-std::vector<std::vector<std::string>> find_matching_games(const std::vector<std::string>& home_games, const std::vector<std::string>& away_games) {
-    std::vector<std::vector<std::string>> matches;
+vector<vector<string>> find_matching_games(const vector<string>& home_games, const vector<string>& away_games) {
+    vector<vector<string>> matches;
 
     for (const auto& home : home_games) {
         auto gamedays = generate_close_dates(home);
@@ -112,52 +115,49 @@ std::vector<std::vector<std::string>> find_matching_games(const std::vector<std:
     return matches;
 }
 
-bool compareDates(const std::vector<std::string>& a, const std::vector<std::string>& b) {
+bool compare_dates(const vector<string>& a, const vector<string>& b) {
     // Assuming the date is in the format "MM/DD/YY"
-    std::string dateA = a[1] + "/24";
-    std::string dateB = b[1] + "/24";
+    string dateA = a[1] + "/24";
+    string dateB = b[1] + "/24";
 
-    std::tm timeA = {};
-    std::tm timeB = {};
+    tm timeA = {};
+    tm timeB = {};
 
-    std::istringstream streamA(dateA);
-    std::istringstream streamB(dateB);
+    istringstream streamA(dateA);
+    istringstream streamB(dateB);
 
-    streamA >> std::get_time(&timeA, "%m/%d/%y");
-    streamB >> std::get_time(&timeB, "%m/%d/%y");
+    streamA >> get_time(&timeA, "%m/%d/%y");
+    streamB >> get_time(&timeB, "%m/%d/%y");
 
-    return std::mktime(&timeA) < std::mktime(&timeB);
+    return mktime(&timeA) < mktime(&timeB);
 }
 
-void save_results(std::vector<std::vector<std::vector<std::string>>>& solutions) {    
-    int attempts = 1000;
+void save_results(vector<vector<vector<string>>>& solutions) {    
+    int attempts = 1;
     if (solutions.size() % attempts == 0) {
-        std::cout << "Found " << attempts <<  " more solutions..." << std::endl;
-        std::ofstream file("all_results_cpp.json");
+        cout << "Found " << attempts <<  " more solutions..." << endl;
+        ofstream file("all_results_cpp.json");
         Json::Value json_results;
         for (auto& solution : solutions) {
             Json::Value json_games;
-            std::sort(solution.begin(), solution.end(), compareDates);
+            sort(solution.begin(), solution.end(), compare_dates);
             for (const auto& games : solution) {
-                std::string formatted_date = games[1];
+                string formatted_date = games[1];
                 Json::Value json_item;
                 json_games[formatted_date] = games[0];
             }
             json_results.append(json_games);
         }
-        std::cout << "..writing to file." << std::endl;
+        cout << "..writing to file." << endl;
         file << json_results;
         file.close();
-        std::exit(3);
+        exit(3);
     }
 }
 
-void find_single_permutation_games(const std::unordered_map<std::string, std::vector<std::string>>& schedule,
-                                        const std::vector<std::string>& single_teams,
-                                        std::unordered_set<std::string>& ballparks_visited,
-                                        std::unordered_set<std::string>& dates_visited,
-                                        std::vector<std::vector<std::string>>& current,
-                                        std::vector<std::vector<std::vector<std::string>>>& results) {
+void find_single_permutation_games(const unordered_map<string, vector<string>>& schedule, const vector<string>& single_teams, 
+                unordered_set<string>& ballparks_visited, unordered_set<string>& dates_visited,
+                vector<vector<string>>& current, vector<vector<vector<string>>>& results) {
     if (ballparks_visited.size() == schedule.size()) {
         results.push_back(current);
         save_results(results);
@@ -193,20 +193,16 @@ void find_single_permutation_games(const std::unordered_map<std::string, std::ve
     }
 }
 
-void find_matching_permutation_games(const std::unordered_map<std::string, std::vector<std::string>>& schedule,
-                                        const std::vector<std::string>& single_teams,
-                                        const std::unordered_map<std::string, std::vector<std::string>>& team_pairs,
-                                        std::unordered_set<std::string>& ballparks_visited,
-                                        std::unordered_set<std::string>& dates_visited,
-                                        std::vector<std::vector<std::string>>& current,
-                                        std::vector<std::vector<std::vector<std::string>>>& results) {
+void find_matching_permutation_games(const unordered_map<string, vector<string>>& schedule, const vector<string>& single_teams,
+                const unordered_map<string, vector<string>>& team_pairs, unordered_set<string>& ballparks_visited,
+                unordered_set<string>& dates_visited, vector<vector<string>>& current, vector<vector<vector<string>>>& results) {
     if (ballparks_visited.size() == team_pairs.size()) {
         find_single_permutation_games(schedule, single_teams, ballparks_visited, dates_visited, current, results);
         return;
     }
 
     for (const auto& team_pair : team_pairs) {
-        const std::string& team = team_pair.first;
+        const string& team = team_pair.first;
 
         if (ballparks_visited.find(team) != ballparks_visited.end()) {
             continue;
@@ -220,7 +216,7 @@ void find_matching_permutation_games(const std::unordered_map<std::string, std::
             auto matches = find_matching_games(schedule.at(team), schedule.at(nearby_team));
 
             if (matches.empty()) {
-                std::cerr << "Could not find any matches for " << team << " and " << nearby_team << std::endl;
+                cerr << "Could not find any matches for " << team << " and " << nearby_team << endl;
             }
 
             ballparks_visited.insert(team);
@@ -232,8 +228,8 @@ void find_matching_permutation_games(const std::unordered_map<std::string, std::
                     for (const auto& date : generate_close_dates(match[0], true)) {
                         dates_visited.insert(date);
                     }
-                    current.push_back({team, match[0]});
-                    current.push_back({nearby_team, match[1]});
+                    current.push_back({nearby_team, match[0]});
+                    current.push_back({team, match[1]});
 
                     find_matching_permutation_games(schedule, single_teams, team_pairs, ballparks_visited, dates_visited, current, results);
 
@@ -255,7 +251,7 @@ void find_matching_permutation_games(const std::unordered_map<std::string, std::
 
 int main(int argc, char* argv[])
 {
-    std::unordered_map<std::string, std::vector<std::string>> team_pairs = {
+    unordered_map<string, vector<string>> team_pairs = {
         {"New York Yankees", {"Boston Red Sox", "Philadelphia Phillies"}},
         {"New York Mets", {"Boston Red Sox", "Philadelphia Phillies"}},
         {"Boston Red Sox", {"New York Mets", "New York Yankees"}},
@@ -283,7 +279,7 @@ int main(int argc, char* argv[])
         {"Toronto Blue Jays", {"Detroit Tigers"}}
     };
 
-    std::vector<std::string> single_teams = {
+    vector<string> single_teams = {
         "Cincinnati Reds",
         "Cleveland Guardians",
         "Miami Marlins",
@@ -299,27 +295,27 @@ int main(int argc, char* argv[])
     };
 
     if (argc < 2) {
-        std::cerr << "Expected: ./mlb-scheduler <homegame.json>" << std::endl;
-        std::exit(1);
+        cerr << "Expected: ./mlb-scheduler.app <homegames.json>" << endl;
+        exit(1);
     }
 
     // Load JSON file
-    Json::Value jsonSchedule = loadSchedule(argv[1]);
+    Json::Value jsonSchedule = load_schedule(argv[1]);
     if (jsonSchedule.empty()) {
-        std::cerr << "Invalid or empty schedule." << std::endl;
-        std::exit(2);
+        cerr << "Invalid or empty schedule." << endl;
+        exit(2);
     }
 
     // Filter out certain dates
-    std::unordered_map<std::string, std::vector<std::string>> schedule = convertJsonToMap(jsonSchedule);
+    unordered_map<string, vector<string>> schedule = convert_json_to_map(jsonSchedule);
     for (const auto& pair : schedule) {
-        schedule[pair.first] = getGames(pair.second);
+        schedule[pair.first] = get_games(pair.second);
     }
 
-    std::unordered_set<std::string> ballparks;
-    std::unordered_set<std::string> dates;
-    std::vector<std::vector<std::string>> current;
-    std::vector<std::vector<std::vector<std::string>>> results;
+    unordered_set<string> ballparks;
+    unordered_set<string> dates;
+    vector<vector<string>> current;
+    vector<vector<vector<string>>> results;
 
     find_matching_permutation_games(schedule, single_teams, team_pairs, ballparks, dates, current, results);
 }
