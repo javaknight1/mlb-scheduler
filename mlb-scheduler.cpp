@@ -31,43 +31,62 @@ Json::Value load_schedule(const string& filePath) {
     return schedule;
 }
 
-unordered_map<string, vector<string>> convert_json_to_map(const Json::Value& jsonData) {
-    unordered_map<string, vector<string>> resultMap;
+vector<unordered_map<string, string>> convert_json_to_map(const Json::Value& jsonData) {
+    vector<unordered_map<string, string>> gameMap;
 
-    if (jsonData.isObject()) {
-        for (const auto& team : jsonData.getMemberNames()) {
-            if (jsonData[team].isArray()) {
-                for (const auto& date : jsonData[team]) {
-                    if (date.isString()) {
-                        resultMap[team].emplace_back(date.asString());
-                    }
+    if (jsonData.isArray()) {
+        unordered_map<string, string> game;
+        for (const auto& gameJson : jsonData) {
+            game["month"] = gameJson["month"].asString();
+            game["day"] = gameJson["day"].asString();
+            game["time"] = gameJson["time"].asString();
+            game["spring"] = gameJson["springtraining"].asString();
+            game["home"] = gameJson["home"].asString();
+            game["away"] = gameJson["away"].asString();
+
+            gameMap.push_back(game);
+        }
+    }
+
+    return gameMap;
+}
+
+unordered_map<string, vector<string>> get_games(const vector<unordered_map<string, string>>& full_schedule) {
+    unordered_map<string, vector<string>> home_games;
+
+    // Get a vector of all the non-spring training home games 
+    for (const auto& game : full_schedule) {
+        if (game.at("spring") != "true") {
+            string gameDay = game.at("month") + "/" + game.at("day");
+            home_games[game.at("home")].push_back(gameDay);
+        }
+    }
+
+    // Remove all the opening home games
+    for (const auto& home_game : home_games) {
+        home_games[home_game.first].erase(home_games[home_game.first].begin());
+    }
+
+    for (const auto& team_games : home_games) {
+        vector<string> filtered_games;
+        for (const auto& game : team_games.second) {
+            tm datetime_obj = {};
+            istringstream dateStream(game + "/24");
+            dateStream >> get_time(&datetime_obj, "%m/%d/%y");
+            mktime(&datetime_obj);
+
+            if (datetime_obj.tm_wday == 5 || datetime_obj.tm_wday == 6 || datetime_obj.tm_wday == 0 || datetime_obj.tm_wday == 1) {
+                if (!(datetime_obj.tm_mon == 4 && datetime_obj.tm_mday < 15) && 
+                    !(datetime_obj.tm_mon == 5 && datetime_obj.tm_mday < 15) && 
+                    !(datetime_obj.tm_mon == 3 && datetime_obj.tm_mday > 21)) {
+                    filtered_games.push_back(game);
                 }
             }
         }
+        home_games[team_games.first] = filtered_games;
     }
 
-    return resultMap;
-}
-
-vector<string> get_games(const vector<string>& schedule) {
-    vector<string> games;
-
-    for (const auto& game : schedule) {
-        tm datetime_obj = {};
-        istringstream dateStream(game + "/24");
-        dateStream >> get_time(&datetime_obj, "%m/%d/%y");
-        mktime(&datetime_obj);
-
-        if (datetime_obj.tm_wday == 5 || datetime_obj.tm_wday == 6 || datetime_obj.tm_wday == 0 || datetime_obj.tm_wday == 1) {
-            if (!(datetime_obj.tm_mon == 4 && datetime_obj.tm_mday < 15) && 
-                !(datetime_obj.tm_mon == 5 && datetime_obj.tm_mday < 15) && 
-                !(datetime_obj.tm_mon == 3 && datetime_obj.tm_mday > 21)) {
-                games.push_back(game);
-            }
-        }
-    }
-
-    return games;
+    return home_games;
 }
 
 string create_datestr_for_matching(const string& gameday, int delta) {
@@ -86,8 +105,8 @@ vector<string> generate_close_dates(const string& game, bool include_itself = fa
     vector<string> result;
 
     for (int i = 1; i <= day_range; ++i) {
-        result.insert(result.begin(), create_datestr_for_matching(game, i));
-        result.push_back(create_datestr_for_matching(game, -i));
+        result.insert(result.begin(), create_datestr_for_matching(game, -i));
+        result.push_back(create_datestr_for_matching(game, i));
     }
 
     if (include_itself) {
@@ -151,8 +170,15 @@ void save_results(vector<vector<vector<string>>>& solutions) {
         cout << "..writing to file." << endl;
         file << json_results;
         file.close();
-        exit(3);
     }
+
+    for (auto& solution : solutions) {
+        for (auto& game : solution) {
+            cout << game[1] << ", " << game[0] << endl;
+        }
+    }
+
+    exit(3);
 }
 
 void find_single_permutation_games(const unordered_map<string, vector<string>>& schedule, const vector<string>& single_teams, 
@@ -193,10 +219,10 @@ void find_single_permutation_games(const unordered_map<string, vector<string>>& 
     }
 }
 
-void find_matching_permutation_games(const unordered_map<string, vector<string>>& schedule, const vector<string>& single_teams,
+void find_matching_permutation_games(const unordered_map<string, vector<string>>& schedule, vector<string>& single_teams,
                 const unordered_map<string, vector<string>>& team_pairs, unordered_set<string>& ballparks_visited,
                 unordered_set<string>& dates_visited, vector<vector<string>>& current, vector<vector<vector<string>>>& results) {
-    if (ballparks_visited.size() == team_pairs.size()) {
+    if (schedule.size() == (ballparks_visited.size() + single_teams.size())) {
         find_single_permutation_games(schedule, single_teams, ballparks_visited, dates_visited, current, results);
         return;
     }
@@ -307,15 +333,13 @@ int main(int argc, char* argv[])
     }
 
     // Filter out certain dates
-    unordered_map<string, vector<string>> schedule = convert_json_to_map(jsonSchedule);
-    for (const auto& pair : schedule) {
-        schedule[pair.first] = get_games(pair.second);
-    }
+    vector<unordered_map<string, string>> full_schedule = convert_json_to_map(jsonSchedule);
+    unordered_map<string, vector<string>> filtered_home_games = get_games(full_schedule);
 
     unordered_set<string> ballparks;
     unordered_set<string> dates;
     vector<vector<string>> current;
     vector<vector<vector<string>>> results;
 
-    find_matching_permutation_games(schedule, single_teams, team_pairs, ballparks, dates, current, results);
+    find_matching_permutation_games(filtered_home_games, single_teams, team_pairs, ballparks, dates, current, results);
 }

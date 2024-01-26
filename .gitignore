@@ -1,5 +1,7 @@
+all_results_cpp.json
 *.json# Prerequisites
 *.d
+.vscode/
 
 # Compiled Object files
 *.slo
