@@ -1,0 +1,304 @@
+{
+    "type": "mlb",
+    "id": 6102684,
+    "datetime_utc": "2024-09-09T23:40:00",
+    "venue": {
+        "state": "MN",
+        "name_v2": "Target Field",
+        "postal_code": "55403",
+        "name": "Target Field",
+        "links": [],
+        "timezone": "America/Chicago",
+        "url": "https://seatgeek.com/venues/target-field/tickets",
+        "score": 0.83,
+        "location": {
+            "lat": 44.9817,
+            "lon": -93.2776
+        },
+        "address": "1 Twins Way",
+        "country": "US",
+        "has_upcoming_events": true,
+        "num_upcoming_events": 84,
+        "city": "Minneapolis",
+        "slug": "target-field",
+        "extended_address": "Minneapolis, MN 55403",
+        "id": 3712,
+        "popularity": 0,
+        "access_method": {
+            "method": "QRCODE",
+            "created_at": "2023-03-22T13:58:52Z",
+            "employee_only": false
+        },
+        "metro_code": 613,
+        "capacity": 0,
+        "display_location": "Minneapolis, MN"
+    },
+    "datetime_tbd": false,
+    "performers": [
+        {
+            "type": "mlb",
+            "name": "Minnesota Twins",
+            "image": "https://seatgeek.com/images/matchup/v3_31353/19/28/huge.jpg",
+            "id": 19,
+            "images": {
+                "huge": "https://seatgeek.com/images/matchup/v3_31353/19/28/huge.jpg"
+            },
+            "divisions": [
+                {
+                    "taxonomy_id": 1010100,
+                    "short_name": null,
+                    "display_name": "American League",
+                    "display_type": "League",
+                    "division_level": 1,
+                    "slug": null
+                },
+                {
+                    "taxonomy_id": 1010100,
+                    "short_name": "AL Central",
+                    "display_name": "American League Central",
+                    "display_type": "Division",
+                    "division_level": 2,
+                    "slug": "american-league-central"
+                }
+            ],
+            "has_upcoming_events": true,
+            "primary": true,
+            "stats": {
+                "event_count": 190
+            },
+            "taxonomies": [
+                {
+                    "id": 1000000,
+                    "name": "sports",
+                    "parent_id": null,
+                    "document_source": {
+                        "source_type": "ELASTIC",
+                        "generation_type": "FULL"
+                    },
+                    "rank": 0,
+                    "seo_event_type": "sport"
+                },
+                {
+                    "id": 1010000,
+                    "name": "baseball",
+                    "parent_id": 1000000,
+                    "document_source": {
+                        "source_type": "ELASTIC",
+                        "generation_type": "FULL"
+                    },
+                    "rank": 0,
+                    "seo_event_type": "baseball"
+                },
+                {
+                    "id": 1010100,
+                    "name": "mlb",
+                    "parent_id": 1010000,
+                    "document_source": {
+                        "source_type": "ELASTIC",
+                        "generation_type": "FULL"
+                    },
+                    "rank": 14,
+                    "seo_event_type": "mlb"
+                }
+            ],
+            "image_attribution": null,
+            "url": "https://seatgeek.com/minnesota-twins-tickets",
+            "score": 0.65,
+            "slug": "minnesota-twins",
+            "home_venue_id": 3712,
+            "short_name": "Twins",
+            "num_upcoming_events": 190,
+            "colors": {
+                "all": [
+                    "#031F40",
+                    "#E20E32",
+                    "#031F40"
+                ],
+                "iconic": "#031F40",
+                "primary": [
+                    "#031F40",
+                    "#E20E32"
+                ]
+            },
+            "image_license": null,
+            "popularity": 0,
+            "home_team": true,
+            "location": {
+                "lat": 44.9817,
+                "lon": -93.2776
+            },
+            "image_rights_message": ""
+        },
+        {
+            "type": "mlb",
+            "name": "Los Angeles Angels",
+            "image": "https://seatgeek.com/images/performers-landscape/los-angeles-angels-cb2fb2/28/huge.jpg",
+            "id": 28,
+            "images": {
+                "huge": "https://seatgeek.com/images/performers-landscape/los-angeles-angels-cb2fb2/28/huge.jpg"
+            },
+            "divisions": [
+                {
+                    "taxonomy_id": 1010100,
+                    "short_name": null,
+                    "display_name": "American League",
+                    "display_type": "League",
+                    "division_level": 1,
+                    "slug": null
+                },
+                {
+                    "taxonomy_id": 1010100,
+                    "short_name": "AL West",
+                    "display_name": "American League West",
+                    "display_type": "Division",
+                    "division_level": 2,
+                    "slug": "american-league-west"
+                }
+            ],
+            "has_upcoming_events": true,
+            "stats": {
+                "event_count": 195
+            },
+            "taxonomies": [
+                {
+                    "id": 1000000,
+                    "name": "sports",
+                    "parent_id": null,
+                    "document_source": {
+                        "source_type": "ELASTIC",
+                        "generation_type": "FULL"
+                    },
+                    "rank": 0,
+                    "seo_event_type": "sport"
+                },
+                {
+                    "id": 1010000,
+                    "name": "baseball",
+                    "parent_id": 1000000,
+                    "document_source": {
+                        "source_type": "ELASTIC",
+                        "generation_type": "FULL"
+                    },
+                    "rank": 0,
+                    "seo_event_type": "baseball"
+                },
+                {
+                    "id": 1010100,
+                    "name": "mlb",
+                    "parent_id": 1010000,
+                    "document_source": {
+                        "source_type": "ELASTIC",
+                        "generation_type": "FULL"
+                    },
+                    "rank": 14,
+                    "seo_event_type": "mlb"
+                }
+            ],
+            "image_attribution": "club provided - 2023",
+            "url": "https://seatgeek.com/los-angeles-angels-tickets",
+            "score": 0.76,
+            "slug": "los-angeles-angels",
+            "home_venue_id": 28,
+            "short_name": "Angels",
+            "num_upcoming_events": 195,
+            "colors": {
+                "all": [
+                    "#BA0021",
+                    "#C4CED4",
+                    "#BA0021"
+                ],
+                "iconic": "#BA0021",
+                "primary": [
+                    "#BA0021",
+                    "#C4CED4"
+                ]
+            },
+            "image_license": "club provided - 2023",
+            "popularity": 0,
+            "away_team": true,
+            "location": {
+                "lat": 33.8003,
+                "lon": -117.883
+            },
+            "image_rights_message": ""
+        }
+    ],
+    "is_open": false,
+    "links": [],
+    "datetime_local": "2024-09-09T18:40:00",
+    "time_tbd": false,
+    "short_title": "Angels at Twins",
+    "visible_until_utc": "2024-09-10T03:40:00",
+    "stats": {
+        "listing_count": 204,
+        "average_price": 128,
+        "lowest_price_good_deals": 26,
+        "lowest_price": 26,
+        "highest_price": 1168,
+        "visible_listing_count": 203,
+        "dq_bucket_counts": [
+            19,
+            56,
+            61,
+            23,
+            13,
+            12,
+            23,
+            0
+        ],
+        "median_price": 101,
+        "lowest_sg_base_price": 15,
+        "lowest_sg_base_price_good_deals": 15,
+        "ticket_count": 1074
+    },
+    "taxonomies": [
+        {
+            "id": 1000000,
+            "name": "sports",
+            "parent_id": null,
+            "rank": 0,
+            "seo_event_type": "sport"
+        },
+        {
+            "id": 1010000,
+            "name": "baseball",
+            "parent_id": 1000000,
+            "rank": 0,
+            "seo_event_type": "baseball"
+        },
+        {
+            "id": 1010100,
+            "name": "mlb",
+            "parent_id": 1010000,
+            "rank": 14,
+            "seo_event_type": "mlb"
+        }
+    ],
+    "url": "https://seatgeek.com/minnesota-twins-tickets/9-9-2024-minneapolis-minnesota-target-field/mlb/6102684",
+    "score": 0.102,
+    "announce_date": "2023-07-27T00:00:00",
+    "created_at": "2023-07-27T16:28:14",
+    "date_tbd": false,
+    "title": "Los Angeles Angels at Minnesota Twins",
+    "popularity": 0.586,
+    "description": "",
+    "status": "normal",
+    "access_method": {
+        "method": "QRCODE",
+        "created_at": "2023-03-22T13:58:52Z",
+        "employee_only": false
+    },
+    "event_promotion": null,
+    "announcements": {},
+    "conditional": false,
+    "enddatetime_utc": null,
+    "visible_at": null,
+    "is_visible_override": "VISIBLE",
+    "tdc_pvo_id": 0,
+    "tdc_pv_id": 0,
+    "is_visible": true,
+    "performer_order": [],
+    "integrated": null,
+    "themes": [],
+    "domain_information": []
+}
